@@ -1,66 +1,66 @@
+// Online C compiler to run C program online
 #include <stdio.h>
 
-// Function to swap two elements
-void swap(int* a, int* b) {
+void printArr(int*arr, int sz)
+{
+    int i =0;
+    for(i= 0; i< sz; i++)
+    {
+        printf("%d, ", arr[i]);
+    }
+    printf("\n");
+}
+void swap(int* a, int* b)
+{
     int t = *a;
     *a = *b;
     *b = t;
 }
-
-// Function to print an array
-void printArray(int array[], int size) {
-    for (int i = 0; i < size; i++) {
-        printf("%d ", array[i]);
-    }
-    printf("\n");
-}
-
-// Partition function to place the pivot element at the correct position
-// and to arrange all elements smaller than the pivot to the left of the pivot
-// and all elements greater than the pivot to the right of the pivot
-int partition(int array[], int low, int high) {
-    int pivot = array[high]; // pivot
-    int i = (low - 1); // Index of smaller element
-
-    for (int j = low; j <= high - 1; j++) {
-        // Print current state of the array and the iterators
-        printf("i: %d, j: %d, array: ", i, j);
-        printArray(array, high + 1);
-
-        // If the current element is smaller than or equal to the pivot
-        if (array[j] <= pivot) {
-            i++; // increment the index of the smaller element
-            swap(&array[i], &array[j]);
+int fix_pivot_pos(int* arr, int li, int hi)
+{
+    int p = arr[hi]; // assumed pivot as last elem.
+    //now find suitable pos for p
+    int it = li;
+    int pi = li -1;
+    
+    //at start of loop assuming the pivot index is -1
+    for (it = li; it < hi; it++)
+    {
+        if (arr[it] <= p)
+        {
+            pi++;
+            //swap assumed pi and 'it'
+            swap(&arr[pi], &arr[it]);
         }
     }
-    swap(&array[i + 1], &array[high]);
-    // Print the state of the array after placing the pivot
-    printf("After placing pivot, array: ");
-    printArray(array, high + 1);
-    return (i + 1);
+    //iterated thru the arr. found pi for 'p'. so move pivot to pi
+    pi++;
+    swap(&arr[pi], &arr[hi]);
+    return pi;
 }
-
-// QuickSort function
-void quickSort(int array[], int low, int high) {
-    if (low < high) {
-        // pi is the partitioning index, array[pi] is now at the right place
-        int pi = partition(array, low, high);
-
-        // Separately sort elements before and after partition
-        quickSort(array, low, pi - 1);
-        quickSort(array, pi + 1, high);
+void quickSort(int* arr, int li, int hi)
+{
+    //when to break this quickSort() recursive call ?
+    if (li < hi) {
+        //1. find and fix position for pivot elem chosen
+        int pi = fix_pivot_pos(arr, li, hi);
+        //2. divide arr to sub arrays. left to pivot, and right to pivot
+        //3. rerun quick sort on left sub arr and right sub arr
+        quickSort(arr, li, pi -1);
+        quickSort(arr, pi+1, hi);
     }
+    
 }
 
-// Main function to test QuickSort
 int main() {
-    int array[] = {6,2,1,4,8,7,5};
-    int n = sizeof(array) / sizeof(array[0]);
-    printf("Original array: \n");
-    printArray(array, n);
+    // Write C code here
+    int arr[] = {6,2,1,4,8,7,5,1,3,12,14,11};
+    int sz = sizeof(arr) / sizeof(arr[0]);
+    int li = 0;
+    int hi = sz -1;
+    quickSort(arr, li, hi);
+    //print arr
+    printArr(arr, sz);
 
-    quickSort(array, 0, n - 1);
-    printf("Sorted array: \n");
-    printArray(array, n);
     return 0;
 }
